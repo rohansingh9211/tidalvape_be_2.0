@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tidal Vape Subscription</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            
+        }
+
+        .header {
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header img {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 20px;
+            color: #333333;
+        }
+
+        .content h2 {
+            color: #e63946;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .content p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .subscription-details {
+            background-color: #f4f7f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .subscription-details p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .subscription-details a {
+            color: #0077cc;
+            text-decoration: none;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .button-container a {
+            background-color: #e63946;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 30px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 1px solid #eeeeee;
+        }
+
+        .product:last-child {
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .product img {
+            max-width: 60px;
+            border-radius: 4px;
+        }
+
+        .product-details {
+            flex-grow: 1;
+            margin-left: 15px;
+        }
+
+        .product-price {
+            width: 80px;
+            text-align: right;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .footer {
+            background-color: #f4f7f6;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #777777;
+        }
+
+        .footer a {
+            color: #0077cc;
+            text-decoration: none;
+        }
+
+        .warning {
+            color: rgb(0, 0, 0);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                margin: 15px;
+            }
+
+            .product img {
+                max-width: 100%;
+            }
+
+            .product-details {
+                font-size: 14px;
+            }
+
+            .button-container a {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .content h2 {
+                font-size: 20px;
+            }
+
+            .content p {
+                font-size: 14px;
+            }
+
+            .total {
+                font-size: 16px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <img src="https://d39qteqdl4fx1o.cloudfront.net/1059029110/645a0c6531ab2.jpg" alt="Tidal Vape Logo" style="width: 150px; height: auto;">
+        </div>
+        <div class="content">
+            <p>Hey <strong>{{first_name}}</strong>,</p>
+            <h2>Thank you for subscribing to Tidal Vape!</h2>
+            <p>We're excited to have you as a part of our community. Your subscription order has been received and is currently being processed. Here are the details of your subscription:</p>
+
+            <div class="subscription-details">
+                <p>Subscription Order: <a href="#">#{{order_id}}</a></p>
+                <p>Start Date: {{start_date}}</p>
+                <p>Next Billing: {{next_billing}}</p>
+                <p>Delivery Frequency: Every {% for i in subscription_days %} {{ i }} {% endfor %} days</p>
+            </div>
+
+            <!-- <div class="button-container">
+                <a href="#">View or Track Order</a>
+            </div> -->
+
+            <div class="product">
+                <table style="width: 100%; border-spacing: 0; border-collapse: collapse;">
+                    {% for item in ordered %}
+                    <tr>
+                        <td style="width: 60px; padding: 10px 0;">
+                            <img src="{{item.product_image}}" 
+                                 alt="Blueberry Sour Raspberry" 
+                                 style="width: 60px; height: auto; display: block; border-radius: 4px;">
+                        </td>
+                        <!-- Product Details Cell -->
+                        <td style="padding-left: 15px; vertical-align: top;">
+                            <p style="margin: 0; font-size: 14px; color: blue;">{{ item.product_name }} X {{ item.quantity }}</p>
+                            <p style="color: grey; margin: 0;">{{item.varient_label}}: {{item.varient_category}}</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </table>
+                
+                <div class="product-price">
+                    <p style="margin: 0; font-size: 14px; color: #333;">£{{total_price}}</p>
+                </div>
+            </div>
+
+            <div class="total">
+                <p>Total: £{{total_price}}</p>
+            </div>
+
+            <p>You'll receive a notification before each shipment is sent,along with any tracking information. If you need to view or manage your subscription. You can do so by visiting the Subscription section on our app.</p>
+
+            <p> If you have any questions or need futher assistance, our customer support team is here to help. Reach out to us at <a href="mailto:info@tidalvape.co.uk">info@tidalvape.co.uk</a> or visit <a href="https://tidalvape.co.uk">TidalVape.co.uk</a>.</p>
+
+            <p>Thank you for choosing Tidal Vape for your vaping needs. We look forward to serving you regularly. excited to serve you!</p>
+
+            <table style="width: 100%; margin: 0; padding: 0; border-spacing: 0;">
+                <tr>
+                    <td style="padding: 10px 0;">
+                        <h3 style="margin: 0;">Delivery Address:</h3>
+                    </td>
+                    <td style="padding: 10px 0; text-align: right;">
+                        <h3 style="margin: 0;"><strong>Estimated Delivery:</strong></h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px 0;">
+                        <!-- <p style="margin: 0;">Chandlers Ford, 8-9, Fryern Arcade,,<br> Winchester Rd
+                            Chandler’s Ford,,<br> Eastleigh, SO53 2DP</p> -->
+                        <p>{{address}}</p>
+                    </td>
+                    <td style="padding: 10px 0; text-align: right;">
+                        <p style="margin: 0;">{{delivery_at}} <br>(Every {% for i in subscription_days %} {{ i }} {% endfor %} days)</p>
+                    </td>
+                </tr>
+            </table>
+            
+
+            <div class="warning">
+
+                <h3>Warning!</h3>
+                Products on this website may contain nicotine, a highly addictive substance.
+                Tidal Vape products are not for minor under 18, pregnant or lactating women,those with cardovascular issues or people seizure disorders.
+            </div>
+        </div>
+
+         <div class="footer">
+            <p>If you have any questions, visit <a href="https://tidalvape.co.uk">TidalVape.co.uk</a> or email us at <a href="mailto:info@tidalvape.co.uk">info@tidalvape.co.uk</a>.</p>
+        </div> 
+    </div>
+</body>
+</html>

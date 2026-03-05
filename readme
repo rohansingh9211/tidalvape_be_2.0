@@ -1,0 +1,5 @@
+
+Run Celery
+celery -A tidalvape_be worker --loglevel=info
+For production use Run Celery:
+celery -A your_project worker --loglevel=info --concurrency=4
