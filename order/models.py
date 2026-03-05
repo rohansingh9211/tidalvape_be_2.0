@@ -22,7 +22,7 @@ class Subscription(BaseModel):
     is_active = models.BooleanField(default=True)
     is_delete = models.BooleanField(default=False)
     quantity = models.IntegerField(default=0)
-    discount = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
+    discount_amount = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
     delivery_charge = models.DecimalField(default=5.49, max_digits=10, decimal_places=2)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     sub_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
