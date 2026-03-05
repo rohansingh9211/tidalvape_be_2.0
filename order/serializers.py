@@ -49,7 +49,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             "is_active",
             'address',
             "quantity",
-            "discount",
+            "discount_amount",
             "delivery_charge",
             "price",
             "sub_total",

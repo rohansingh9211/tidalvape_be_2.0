@@ -85,8 +85,7 @@ def create_transaction(request_data):
         UserLoyalty.objects.filter(user=user).update(
             points=F('points') + 1
         )
-        return StandardAPIResponse( UserOrderSerializer(order).data, status=status.HTTP_201_CREATED)
-
+        return StandardAPIResponse(UserOrderSerializer(order).data, status=status.HTTP_201_CREATED)
     except Exception as e:
         return StandardAPIResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -125,7 +124,7 @@ def handle_subscription(order, request_data, order_data, user, address_text):
             delivery_charge=order_data['delivery_charge'],
             price=order_itm['price'],
             quantity=order_itm['quantity'],
-            discount=order_data['discount_amount'],
+            discount_amount=order_data['discount_amount'],
             total_price=order_data['grand_total'],
             address=address_text,
             sub_total=order_data['sub_total']
@@ -136,7 +135,7 @@ def find_total_calculation(request_data: dict):
     try:
         cart_items = request_data.get("cart_product", [])
         subscription = request_data.get("is_subscription", False)
-        loyalty_discount_id = request_data.get("loyality_discount")
+        loyalty_discount_id = request_data.get("loyalty_discount")
 
         if not cart_items:
             return {

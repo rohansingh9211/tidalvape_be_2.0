@@ -67,12 +67,19 @@ class GetProductDetailSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(read_only=True, many=True)
     options = ProductOptionSerializer(read_only=True, many=True)
     images = ProductImageSerializer(read_only=True, many=True)
+    image = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
-        fields = ['id', 'title', 'body_html', 'vendor', 'product_type', 'handle', 'status', 'published_scope', 'tags', 'published_at', 'template_suffix', 'variants', 'options', 'images']
+        fields = ['id', 'title', 'body_html', 'vendor', 'product_type', 'handle', 'status', 'image', 'published_scope', 'tags', 'published_at', 'template_suffix', 'variants', 'options', 'images']
 
-
+    def get_image(self, obj):
+        product_image = obj.images.filter(position=1).first()
+        if product_image and product_image.image:
+            return product_image.image.url
+        return None
+    
+    
 class ProductSerializer(serializers.ModelSerializer):
     options = serializers.SerializerMethodField()
     class Meta:
