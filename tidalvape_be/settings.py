@@ -159,6 +159,10 @@ CORS_ALLOW_ALL_ORIGINS = True
 #     # Add other allowed origins if needed
 # ]   
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://app.tidalvape.co.uk",
+]
+
 CORS_ALLOW_METHODS = (
     'GET',
     'POST',
