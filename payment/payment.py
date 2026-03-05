@@ -80,7 +80,7 @@ def create_transaction(request_data):
                 handle_promo_code(request_data, user)
 
         # Outside atomic block
-        send_order_email.delay(order.id)
+        # send_order_email.delay(order.id)
         # ShopifyOrderBoard().create_order(order.id)
         UserLoyalty.objects.filter(user=user).update(
             points=F('points') + 1
