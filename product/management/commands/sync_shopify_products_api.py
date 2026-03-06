@@ -58,9 +58,7 @@ class Command(BaseCommand):
             vendor = Vendor.objects.filter(name=vendor_name).first()
 
             if not vendor:
-                vendor = Vendor.objects.create(
-                    name=vendor_name
-                )
+                vendor = Vendor.objects.create(name=vendor_name)
 
         # =========================
         # Product Type (NO Shopify ID)
@@ -72,9 +70,7 @@ class Command(BaseCommand):
             product_type = ProductType.objects.filter(name=pt_name).first()
 
             if not product_type:
-                product_type = ProductType.objects.create(
-                    name=pt_name
-                )
+                product_type = ProductType.objects.create(name=pt_name)
 
         # =========================
         # Product (USE Shopify ID)
@@ -89,9 +85,11 @@ class Command(BaseCommand):
                 "product_type": product_type,
                 "status": data.get("status"),
                 "published_scope": data.get("published_scope"),
-                "published_at": parse_datetime(data.get("published_at"))
-                if data.get("published_at")
-                else None,
+                "published_at": (
+                    parse_datetime(data.get("published_at"))
+                    if data.get("published_at")
+                    else None
+                ),
                 "template_suffix": data.get("template_suffix"),
             },
         )
@@ -109,9 +107,7 @@ class Command(BaseCommand):
                 tag = ProductTag.objects.filter(name=tag_name).first()
 
                 if not tag:
-                    tag = ProductTag.objects.create(
-                        name=tag_name
-                    )
+                    tag = ProductTag.objects.create(name=tag_name)
 
                 product.tags.add(tag)
 
@@ -151,7 +147,7 @@ class Command(BaseCommand):
         # =========================
         for option in data.get("options", []):
             ProductOption.objects.update_or_create(
-                id=option["id"],   # 🔥 Shopify option ID
+                id=option["id"],  # 🔥 Shopify option ID
                 defaults={
                     "product": product,
                     "name": option.get("name"),

@@ -1,34 +1,47 @@
-from product.models import Product, ProductDeal, ProductImage, ProductOption, ProductTag, ProductVariant
+from product.models import (
+    Product,
+    ProductDeal,
+    ProductImage,
+    ProductOption,
+    ProductTag,
+    ProductVariant,
+)
 from rest_framework import serializers
+
 
 class ProductTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductTag
         fields = '__all__'
 
+
 class ProductVariantSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductVariant
         fields = '__all__'
-    
+
     def get_image(self, obj):
         try:
             image = ProductImage.objects.get(id=obj.image_id)
             return image.image.url if image.image else None
         except ProductImage.DoesNotExist:
             return None
-    
+
+
 class ProductOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductOption
         fields = '__all__'
 
+
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
         fields = '__all__'
-        
+
+
 class GetProductCardSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
@@ -68,20 +81,37 @@ class GetProductDetailSerializer(serializers.ModelSerializer):
     options = ProductOptionSerializer(read_only=True, many=True)
     images = ProductImageSerializer(read_only=True, many=True)
     image = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Product
-        fields = ['id', 'title', 'body_html', 'vendor', 'product_type', 'handle', 'status', 'image', 'published_scope', 'tags', 'published_at', 'template_suffix', 'variants', 'options', 'images']
+        fields = [
+            'id',
+            'title',
+            'body_html',
+            'vendor',
+            'product_type',
+            'handle',
+            'status',
+            'image',
+            'published_scope',
+            'tags',
+            'published_at',
+            'template_suffix',
+            'variants',
+            'options',
+            'images',
+        ]
 
     def get_image(self, obj):
         product_image = obj.images.filter(position=1).first()
         if product_image and product_image.image:
             return product_image.image.url
         return None
-    
-    
+
+
 class ProductSerializer(serializers.ModelSerializer):
     options = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
         fields = [
@@ -96,9 +126,9 @@ class ProductSerializer(serializers.ModelSerializer):
             'tags',
             'published_at',
             'template_suffix',
-            'options'
+            'options',
         ]
-        
+
     def get_options(self, obj):
         return ProductOption.objects.filter(product=obj).first().name
 
@@ -111,5 +141,5 @@ class ProductDealSerializer(serializers.ModelSerializer):
             # "product",
             "deal_name",
             "deal_quantity",
-            "deal_price"
+            "deal_price",
         ]

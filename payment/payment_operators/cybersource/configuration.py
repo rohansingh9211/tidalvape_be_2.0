@@ -1,8 +1,9 @@
 # Configuration.py
-    
+
 from CyberSource import *
 from CyberSource.logging.log_configuration import LogConfiguration
 import os
+
 
 class Configuration:
     def __init__(self):
@@ -10,24 +11,24 @@ class Configuration:
         self.run_environment = "apitest.cybersource.com"
         self.use_metakey = False
         self.portfolio_id = ''
-        
+
         self.IntermediateHost = "https://manage.windowsazure.com"
         self.request_json_path = ""
-        
-        #PRODUCTION
+
+        # PRODUCTION
         # self.merchant_id = "tidal_vape_limited_cs"
         # self.merchant_id = "tidal_vape_api_cs"
         # self.merchant_keyid = 'f15c90c7-9416-4633-8f27-b200f94e95ca'
         # self.merchant_secretkey = 'ayOP5iew3zerMcZRzxkTwkiNJUkOVHEBtY6hIRsQDOw='
         # self.host = "https://api.cybersource.com"
-        
+
         # SANDBOX
         self.merchant_id = "tidal_vape_test_cs"
         self.merchant_keyid = '319f108b-cdcf-4a35-9701-7c339d0983a4'
         self.merchant_secretkey = 'suJ3LZ9YQX4Thlnm5zJBbk9ilGnyTcXvTYsvlMXRLug='
         self.host = "https://apitest.cybersource.com"
-        
-        self.timeout = 1000  
+
+        self.timeout = 1000
         self.enable_log = True
         self.log_file_name = "cybs"
         self.log_maximum_size = 10487560
@@ -61,8 +62,6 @@ class Configuration:
         configuration_dictionary["log_config"] = log_config
 
         return configuration_dictionary
-
-    
 
 
 # api_key 2419b655-8148-4b59-a3da-8010c421be5d

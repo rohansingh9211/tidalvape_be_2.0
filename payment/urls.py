@@ -7,6 +7,9 @@ from django.conf.urls.static import static
 router = DefaultRouter()
 urlpatterns = [
     path("", include(router.urls)),
-    path('csp/payment', CspEnrollWebPendingAuthenticationView.as_view(), name='enrollwebauth'),
-    
+    path(
+        'csp/payment',
+        CspEnrollWebPendingAuthenticationView.as_view(),
+        name='enrollwebauth',
+    ),
 ]

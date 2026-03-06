@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "storages",
-    'corsheaders'
+    'corsheaders',
 ] + APPS
 
 MIDDLEWARE = [
@@ -157,20 +157,13 @@ CORS_ALLOW_ALL_ORIGINS = True
 #     # 'http://localhost:8001',
 
 #     # Add other allowed origins if needed
-# ]   
+# ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://app.tidalvape.co.uk",
 ]
 
-CORS_ALLOW_METHODS = (
-    'GET',
-    'POST',
-    'PUT',
-    'PATCH',
-    'DELETE',
-    'OPTIONS'
-)
+CORS_ALLOW_METHODS = ('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS')
 
 CORS_ALLOW_HEADERS = (
     'accept',
@@ -200,7 +193,9 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_ADDRESSING_STYLE = "virtual"
-AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
+AWS_S3_CUSTOM_DOMAIN = (
+    f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
+)
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
 STORAGES = {
     "default": {
@@ -226,7 +221,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_USER')
 
 SHOPIFY_STORE_DOMAIN = os.getenv('SHOPIFY_STORE_DOMAIN')
 SHOPIFY_ADMIN_TOKEN = os.getenv("SHOPIFY_ADMIN_TOKEN")
-SHOPIFY_STORE_FRONT_API_KEY= os.getenv("SHOPIFY_STORE_FRONT_API_KEY")
+SHOPIFY_STORE_FRONT_API_KEY = os.getenv("SHOPIFY_STORE_FRONT_API_KEY")
 SHOPIFY_API_VERSION = os.getenv("SHOPIFY_API_VERSION")
 
 DELIVERY_THRESHOLD = os.getenv('DELIVERY_THRESHOLD')

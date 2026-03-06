@@ -11,18 +11,15 @@ BANNER_SCREEN = (
     ("mobile", "MOBILE"),
 )
 
+
 class Banner(BaseModel):
     image = models.ImageField(upload_to="banner/")
-    screen = models.CharField(
-        max_length=20,
-        choices=BANNER_SCREEN,
-        default="desktop"
-    )
+    screen = models.CharField(max_length=20, choices=BANNER_SCREEN, default="desktop")
     endpoint = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=False)
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
-    
+
     def __str__(self):
         return f'{self.screen} - {self.endpoint}'
 
@@ -41,13 +38,17 @@ class Collection(ShopifyBaseModel):
     def __str__(self):
         return self.title
 
+
 class ReedemCode(BaseModel):
     reedeem_name = models.CharField(max_length=20)
     discount_percentage = models.PositiveIntegerField()
 
+
 class UserReedem(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reedem_user")
-    reedem_code = models.ForeignKey(ReedemCode, on_delete=models.CASCADE, related_name="reedem_code")
+    reedem_code = models.ForeignKey(
+        ReedemCode, on_delete=models.CASCADE, related_name="reedem_code"
+    )
     is_used = models.BooleanField(default=False)
 
 
@@ -67,26 +68,16 @@ class Discount(BaseModel):
 
     code = models.CharField(max_length=50, unique=True, null=True, blank=True)
     label = models.CharField(max_length=100)
-    discount_type = models.CharField(
-        max_length=20,
-        choices=DISCOUNT_TYPE
-    )
+    discount_type = models.CharField(max_length=20, choices=DISCOUNT_TYPE)
     discount_category = models.CharField(
-        max_length=20,
-        choices=DISCOUNT_CATEGORY,
-        default="COUPON"
+        max_length=20, choices=DISCOUNT_CATEGORY, default="COUPON"
     )
     value = models.DecimalField(max_digits=10, decimal_places=2)
     minimum_order_amount = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=Decimal("0.00")
+        max_digits=10, decimal_places=2, default=Decimal("0.00")
     )
     max_discount_amount = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        null=True,
-        blank=True
+        max_digits=10, decimal_places=2, null=True, blank=True
     )
     usage_limit = models.IntegerField(null=True, blank=True)
     used_count = models.IntegerField(default=0)

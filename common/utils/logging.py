@@ -1,7 +1,6 @@
 import logging
 from json_log_formatter import JSONFormatter
 
-
 logger = logging.getLogger("tidal-vape")
 
 

@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from product.models import Product, ProductVariant
 from shop.models import Discount
 
+
 class CartService:
 
     DELIVERY_THRESHOLD = Decimal("24.00")
@@ -39,8 +40,7 @@ class CartService:
 
         if subscription:
             subscription_discount = Discount.objects.filter(
-                discount_category="SUBSCRIPTION",
-                is_active=True
+                discount_category="SUBSCRIPTION", is_active=True
             ).first()
 
         loyalty_discount = None
@@ -48,9 +48,7 @@ class CartService:
         if loyalty_discount_id:
             print(loyalty_discount, '----------loyalty_discount')
             loyalty_discount = Discount.objects.filter(
-                id=loyalty_discount_id,
-                discount_category="LOYALTY",
-                is_active=True
+                id=loyalty_discount_id, discount_category="LOYALTY", is_active=True
             ).first()
 
         # -------------------------
@@ -61,14 +59,12 @@ class CartService:
 
         if subscription_discount:
             subscription_discount_amt = CartService._calculate_discount(
-                sub_total,
-                subscription_discount
+                sub_total, subscription_discount
             )
 
         if loyalty_discount:
             loyalty_discount_amt = CartService._calculate_discount(
-                sub_total,
-                loyalty_discount
+                sub_total, loyalty_discount
             )
 
         total_discount = subscription_discount_amt + loyalty_discount_amt
@@ -81,23 +77,44 @@ class CartService:
 
         grand_total = sub_total - total_discount + delivery_charge
         grand_total = CartService._truncate(grand_total)
-        
+
         return {
             "sub_total": CartService._format(sub_total),
             "discount": {
-                "subscription": {
-                    "label": subscription_discount.label if subscription_discount else None,
-                    "discount": f"£{CartService._format(subscription_discount_amt)} ({int(subscription_discount.value)}{'%' if subscription_discount.discount_type == 'PERCENTAGE' else '£'})" if subscription_discount else None
-                } if subscription_discount else None,
-
-                "loyalty": {
-                    "label": loyalty_discount.label if loyalty_discount else None,
-                    "discount": (
-                        f"£{CartService._format(subscription_discount_amt)} "
-                        f"({int(loyalty_discount.value)}"
-                        f"{'%' if loyalty_discount and loyalty_discount.discount_type == 'PERCENTAGE' else '£'})" if subscription_discount else None
-                    ) if loyalty_discount else None
-                } if loyalty_discount else None,
+                "subscription": (
+                    {
+                        "label": (
+                            subscription_discount.label
+                            if subscription_discount
+                            else None
+                        ),
+                        "discount": (
+                            f"£{CartService._format(subscription_discount_amt)} ({int(subscription_discount.value)}{'%' if subscription_discount.discount_type == 'PERCENTAGE' else '£'})"
+                            if subscription_discount
+                            else None
+                        ),
+                    }
+                    if subscription_discount
+                    else None
+                ),
+                "loyalty": (
+                    {
+                        "label": loyalty_discount.label if loyalty_discount else None,
+                        "discount": (
+                            (
+                                f"£{CartService._format(subscription_discount_amt)} "
+                                f"({int(loyalty_discount.value)}"
+                                f"{'%' if loyalty_discount and loyalty_discount.discount_type == 'PERCENTAGE' else '£'})"
+                                if subscription_discount
+                                else None
+                            )
+                            if loyalty_discount
+                            else None
+                        ),
+                    }
+                    if loyalty_discount
+                    else None
+                ),
             },
             "delivery_charge": CartService._format(delivery_charge),
             "grand_total": CartService._format(grand_total),

@@ -1,5 +1,12 @@
 from django.contrib import admin
-from .models import (Product, ProductImage, ProductOption, ProductType, ProductVariant, Vendor)
+from .models import (
+    Product,
+    ProductImage,
+    ProductOption,
+    ProductType,
+    ProductVariant,
+    Vendor,
+)
 
 
 @admin.register(Product)

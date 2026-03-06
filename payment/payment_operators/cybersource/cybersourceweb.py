@@ -9,7 +9,13 @@ from CyberSource.rest import ApiException
 from django.template.loader import get_template
 from django.core.mail import send_mail
 from django.conf import settings
-from y6u.utils import (Find_total_calculate_for_order, find_total_calculation, generate_unique_order_id, Find_total_calculate, webUserAddressDetail)
+from y6u.utils import (
+    Find_total_calculate_for_order,
+    find_total_calculation,
+    generate_unique_order_id,
+    Find_total_calculate,
+    webUserAddressDetail,
+)
 from y6u.serializers import OrderItemSerializer, UserOrderSerializer
 from datetime import datetime, timedelta
 from django.contrib.auth.hashers import make_password
@@ -18,6 +24,7 @@ from y6u.Shopify.shopify_order import ShopifyOrderBoard
 # Load the configuration module
 config_file = os.path.join(os.getcwd(), "Configuration.py")
 configuration = SourceFileLoader("module.name", config_file).load_module()
+
 
 # Function to delete None values in the JSON request body
 def del_none(d):
@@ -28,19 +35,20 @@ def del_none(d):
             del_none(value)
     return d
 
+
 def getUserAddressDetail(data):
     user = User.objects.get(id=data['user'])
     address = Address.objects.get(id=data['address'])
     payload = {
-        "first_name":user.first_name,
-        "last_name":user.last_name,
-        "email":user.email,
-        "phone_number":user.phone_number,
-        "address":f"{address.flate_name}",
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "email": user.email,
+        "phone_number": user.phone_number,
+        "address": f"{address.flate_name}",
         "zip_code": address.zip_code,
-        "city":address.city,
-        "postal_code":address.zip_code,
-        "admin_area":address.landmark
+        "city": address.city,
+        "postal_code": address.zip_code,
+        "admin_area": address.landmark,
     }
     return payload
 
@@ -49,10 +57,9 @@ def create_transaction(return_data, amount, status, request_data, user_detail):
     try:
         try:
             user = User.objects.get(email=user_detail['email'])
-        except User.DoesNotExist:  
+        except User.DoesNotExist:
             user = User.objects.create(
-                email=user_detail['email'],
-                password=make_password(user_detail['email'])
+                email=user_detail['email'], password=make_password(user_detail['email'])
             )
 
         quantity = int(request_data['quantity'])
@@ -61,12 +68,15 @@ def create_transaction(return_data, amount, status, request_data, user_detail):
         is_subscription = request_data.get('is_subscription', False)
         delivery_charge = float(request_data['delivery_charge'])
         discount_percentage = request_data['discount_percentage']
-        transaction = Transaction.objects.get(cyber_transactionid=request_data['authenticationTransactionId'])
+        transaction = Transaction.objects.get(
+            cyber_transactionid=request_data['authenticationTransactionId']
+        )
         if request_data['delivery_type'] == "standard":
-            address_text = f"{user_detail['address']} {user_detail['zip_code']} United Kingdom"
+            address_text = (
+                f"{user_detail['address']} {user_detail['zip_code']} United Kingdom"
+            )
         else:
             address_text = "Tidal Vape Chandler's Ford, 8-9 Fryern Arcade, Winchester Road, Chandler's Ford, Eastleigh, SO53 2DP"
-
 
         order_data = find_total_calculation(request_data)
         orderObj = Order.objects.create(
@@ -81,7 +91,7 @@ def create_transaction(return_data, amount, status, request_data, user_detail):
             status='SUCCESS',
             address=address_text,
             payload=str(request_data),
-            is_subscribed=is_subscription
+            is_subscribed=is_subscription,
         )
 
         if is_subscription:
@@ -95,7 +105,7 @@ def create_transaction(return_data, amount, status, request_data, user_detail):
             if "cart_product" in request_data:
                 for item in order_data.get('order_item'):
                     if 'subscibe_id' not in request_data:
-                        
+
                         Subscription.objects.create(
                             product=item.get('product'),
                             product_meta=item.get("product_meta"),
@@ -110,9 +120,9 @@ def create_transaction(return_data, amount, status, request_data, user_detail):
                             price=item.get('price'),
                             discount_percentage=item.get('discount_percentage'),
                             catgeory_key=item.get('catgeory_key'),
-                            category_value=item.get('category_value')
+                            category_value=item.get('category_value'),
                         )
-                    
+
                     OrderItems.objects.create(
                         product=item.get('product'),
                         order=orderObj,
@@ -123,7 +133,7 @@ def create_transaction(return_data, amount, status, request_data, user_detail):
                         catgeory_key=item.get('catgeory_key'),
                         category_value=item.get('category_value'),
                         product_meta=item.get("product_meta"),
-                        apply_deal=item.get('deal')
+                        apply_deal=item.get('deal'),
                     )
             else:
                 print('nooooooooooooooooooo')
@@ -131,11 +141,8 @@ def create_transaction(return_data, amount, status, request_data, user_detail):
             if "promo_code" in request_data:
                 reedem_code = ReedemCode.objects.get(id=request_data['promo_code'])
                 if reedem_code:
-                    UserReedem.objects.create(
-                        user=user,
-                        reedem_code=reedem_code
-                    )
-                
+                    UserReedem.objects.create(user=user, reedem_code=reedem_code)
+
             if "cart_product" in request_data:
                 try:
                     for item in order_data.get('order_item'):
@@ -150,45 +157,46 @@ def create_transaction(return_data, amount, status, request_data, user_detail):
                             catgeory_key=item.get('catgeory_key'),
                             category_value=item.get('category_value'),
                             product_meta=item.get("product_meta"),
-                            apply_deal=item.get('deal')
+                            apply_deal=item.get('deal'),
                         )
                 except Exception as e:
                     print(e, '---------------')
-                    
+
         # CartItem.objects.filter(user__id=request_data['user']).delete()
 
         email_forward(request_data, user_detail, orderObj, address_text)
-        
+
         # Shopify data are comming
         try:
-            data=UserOrderSerializer(orderObj).data
+            data = UserOrderSerializer(orderObj).data
             shopifyOrder = ShopifyOrderBoard()
             shopifyOrder.CreateOrder(data)
         except Exception as e:
             print(e, '----------------------------error in shopify data')
-            
-            
-            
+
         response = {
             "msg": "The payment process is completed successfully.",
             "order_detail": UserOrderSerializer(orderObj).data,
-            "status": 201
+            "status": 201,
         }
         return response
     except Exception as e:
-        return {"msg":e, "status":422}
+        return {"msg": e, "status": 422}
+
 
 def email_forward(request_data, user_detail, orderObj, address_text):
     try:
-        context_data={}
-        order_items = OrderItems.objects.filter(order__id=orderObj.id).select_related('product')
+        context_data = {}
+        order_items = OrderItems.objects.filter(order__id=orderObj.id).select_related(
+            'product'
+        )
         serialized_order_items = OrderItemSerializer(order_items, many=True)
         all_order = []
-        
+
         date_str = orderObj.created_at
         new_date = date_str + timedelta(days=2)
         delivery_date = new_date.strftime("%b %d %Y")
-        
+
         for item_data in serialized_order_items.data:
             product = item_data['product']
             meta_data = product.get('meta_data', [])
@@ -201,32 +209,32 @@ def email_forward(request_data, user_detail, orderObj, address_text):
                 "total_price": item_data['total_price'],
                 "price": item_data['price'],
                 "varient_label": item_data['catgeory_key'],
-                "varient_category": item_data.get('category_value', "")
+                "varient_category": item_data.get('category_value', ""),
             }
             all_order.append(payload)
 
         context_data = {
-            "first_name":user_detail['first_name'],
-            "to_email":user_detail['email'],
-            "order_date":orderObj.created_at,
-            "delivery_at":delivery_date,
-            "order_id":orderObj.order_id,
-            "ordered":all_order,
-            "price":request_data['total'],
-            "total_price":round(orderObj.total_price, 2),
-            "quantity":request_data['quantity'],
-            "discount":request_data['discount_percentage'],
-            "address":address_text,
-            "zip_code":user_detail['zip_code'],
-            "city":user_detail['city'],
-            "admin_area":user_detail['admin_area'],
-            "delivery_charge":request_data['delivery_charge'],
-            "card_number":request_data['card_number'][-4:],
-            "delivery_type": request_data['delivery_type']
+            "first_name": user_detail['first_name'],
+            "to_email": user_detail['email'],
+            "order_date": orderObj.created_at,
+            "delivery_at": delivery_date,
+            "order_id": orderObj.order_id,
+            "ordered": all_order,
+            "price": request_data['total'],
+            "total_price": round(orderObj.total_price, 2),
+            "quantity": request_data['quantity'],
+            "discount": request_data['discount_percentage'],
+            "address": address_text,
+            "zip_code": user_detail['zip_code'],
+            "city": user_detail['city'],
+            "admin_area": user_detail['admin_area'],
+            "delivery_charge": request_data['delivery_charge'],
+            "card_number": request_data['card_number'][-4:],
+            "delivery_type": request_data['delivery_type'],
         }
-        
+
         if request_data['is_subscription'] == False:
-            template_path= 'regular_email.html'
+            template_path = 'regular_email.html'
         else:
             for i in request_data['subscription_days']:
                 date_str = orderObj.created_at
@@ -234,8 +242,8 @@ def email_forward(request_data, user_detail, orderObj, address_text):
             context_data['next_billing'] = next_billing.strftime("%d-%m-%Y")
             context_data['start_date'] = orderObj.created_at.strftime("%d-%m-%Y")
             context_data['subscription_days'] = request_data['subscription_days']
-            template_path= 'subscription_email.html'
-            
+            template_path = 'subscription_email.html'
+
         template = get_template(template_path)
         html_content = template.render(context_data)
         send_mail(
@@ -244,11 +252,11 @@ def email_forward(request_data, user_detail, orderObj, address_text):
             settings.EMAIL_HOST_USER,
             [user_detail['email']],
             fail_silently=False,
-            html_message=html_content
+            html_message=html_content,
         )
     except Exception as e:
         print(e, '---------------nfkndk')
-    
+
 
 def capture_payment(authorization_id, amount, currency, request_data, user_detail):
     try:
@@ -257,50 +265,53 @@ def capture_payment(authorization_id, amount, currency, request_data, user_detai
         clientReferenceInformation = Ptsv2paymentsClientReferenceInformation(
             code=clientReferenceInformationCode
         )
-        
+
         # Processing Information
         processingInformationCapture = True
         processingInformation = Ptsv2paymentsProcessingInformation(
             capture=processingInformationCapture
         )
-        
+
         # Order Information Amount Details
         orderInformationAmountDetails = Ptsv2paymentsOrderInformationAmountDetails(
-            total_amount=amount,
-            currency=currency
+            total_amount=amount, currency=currency
         )
-        
+
         # Order Information
         orderInformation = Ptsv2paymentsOrderInformation(
             amount_details=orderInformationAmountDetails.__dict__
         )
-        
+
         # Construct Capture Request as a Dictionary
         capture_request = {
             "clientReferenceInformation": clientReferenceInformation.__dict__,
             "processingInformation": processingInformation.__dict__,
-            "orderInformation": orderInformation.__dict__
+            "orderInformation": orderInformation.__dict__,
         }
-        
+
         # Remove any None values from the request
         capture_request = del_none(capture_request)
-        
+
         # Convert the request to JSON format
         capture_request_json = json.dumps(capture_request)
-        
+
         # Setup Configuration
         config_obj = configuration.Configuration()
         client_config = config_obj.get_configuration()
-        
+
         # Initialize Capture API instance
         api_instance = CaptureApi(client_config)
         authorization_id_str = str(authorization_id)
-        response_data, status_code, response_body = api_instance.capture_payment(capture_request_json, authorization_id_str)
-        
+        response_data, status_code, response_body = api_instance.capture_payment(
+            capture_request_json, authorization_id_str
+        )
+
         print(response_data, '------------------------response_data')
-    
-        return create_transaction(response_data, amount, status_code, request_data, user_detail)
-    
+
+        return create_transaction(
+            response_data, amount, status_code, request_data, user_detail
+        )
+
     except ApiException as e:
         print(f"\nException when calling CaptureApi->capture_payment 123: {e}\n")
 
@@ -311,11 +322,11 @@ def simple_authorizationinternetWeb(flag, request_data):
     price = float(request_data['total'])
     is_subscription = request_data.get('is_subscription', False)
     total_price = price
-    
+
     # Calculate total price with discount and delivery charge
     # total_price = (price * quantity) - ((price * quantity) * int(request_data['discount_percentage'])/100)
     # total_price += request_data['delivery_charge']
-    
+
     # Get user address details
     user_detail = webUserAddressDetail(request_data)
 
@@ -327,10 +338,12 @@ def simple_authorizationinternetWeb(flag, request_data):
 
     # Processing Information (flag controls capture behavior)
     processingInformationCapture = flag
-    processingInformationActionList = ["VALIDATE_CONSUMER_AUTHENTICATION"]  # Ensures 3DS validation
+    processingInformationActionList = [
+        "VALIDATE_CONSUMER_AUTHENTICATION"
+    ]  # Ensures 3DS validation
     processingInformation = Ptsv2paymentsProcessingInformation(
         capture=processingInformationCapture,
-        action_list=processingInformationActionList
+        action_list=processingInformationActionList,
     )
 
     # Payment Information (Card details)
@@ -342,7 +355,7 @@ def simple_authorizationinternetWeb(flag, request_data):
         number=paymentInformationCardNumber,
         expiration_month=paymentInformationCardExpirationMonth,
         expiration_year=paymentInformationCardExpirationYear,
-        security_code=paymentInformationCardCVV
+        security_code=paymentInformationCardCVV,
     )
     paymentInformation = Ptsv2paymentsPaymentInformation(
         card=paymentInformationCard.__dict__
@@ -350,25 +363,24 @@ def simple_authorizationinternetWeb(flag, request_data):
 
     # Order Information (Billing and Amount Details)
     orderInformationAmountDetails = Ptsv2paymentsOrderInformationAmountDetails(
-        total_amount=total_price,
-        currency="GBP"
+        total_amount=total_price, currency="GBP"
     )
     orderInformationBillTo = Ptsv2paymentsOrderInformationBillTo(
         # first_name=user_detail.get('first_name', 'guest'),
         # last_name=user_detail.get('last_name', 'user'),
-        first_name = user_detail.get('first_name') or 'guest',
-        last_name = user_detail.get('last_name') or 'user',
+        first_name=user_detail.get('first_name') or 'guest',
+        last_name=user_detail.get('last_name') or 'user',
         address1=user_detail['address'],
         locality=user_detail['city'],
         administrative_area="CA",
         postal_code=user_detail['postal_code'],
         country="UK",
         email=user_detail['email'],
-        phone_number=user_detail['phone_number']
+        phone_number=user_detail['phone_number'],
     )
     orderInformation = Ptsv2paymentsOrderInformation(
         amount_details=orderInformationAmountDetails.__dict__,
-        bill_to=orderInformationBillTo.__dict__
+        bill_to=orderInformationBillTo.__dict__,
     )
 
     # Consumer Authentication Information (3DS transaction ID, if available)
@@ -382,7 +394,7 @@ def simple_authorizationinternetWeb(flag, request_data):
         processing_information=processingInformation.__dict__,
         payment_information=paymentInformation.__dict__,
         order_information=orderInformation.__dict__,
-        consumer_authentication_information=consumerAuthenticationInformation.__dict__
+        consumer_authentication_information=consumerAuthenticationInformation.__dict__,
     )
 
     # Remove None values from the request object and convert to JSON
@@ -402,27 +414,29 @@ def simple_authorizationinternetWeb(flag, request_data):
 
             if return_data.status == "AUTHORIZED":
                 print("Payment Authorized")
-                response_data = capture_payment(return_data.id, total_price, "GBP", request_data, user_detail)
+                response_data = capture_payment(
+                    return_data.id, total_price, "GBP", request_data, user_detail
+                )
                 print(response_data, '---------------ress')
                 return response_data
             elif "consumerAuthenticationInformation" in body:
-                print("3DS Authentication Required:", body["consumerAuthenticationInformation"])
+                print(
+                    "3DS Authentication Required:",
+                    body["consumerAuthenticationInformation"],
+                )
                 return {
                     "msg": "3DS authentication required",
-                    "status": 302, 
-                    "authentication_url": body["consumerAuthenticationInformation"].get("authentication_url")
+                    "status": 302,
+                    "authentication_url": body["consumerAuthenticationInformation"].get(
+                        "authentication_url"
+                    ),
                 }
             else:
                 return {"msg": "Payment process incomplete", "status": 422}
         except Exception as e:
             print(e, '-----------------error')
             return {"msg": e, "status": 422}
-        
 
     except Exception as e:
         print(f"\nException when calling PaymentsApi->create_payment: {e}\n")
         return {"msg": "Payment process incomplete", "status": 422}
-
-
-    
-

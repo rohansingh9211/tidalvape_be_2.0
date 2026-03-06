@@ -23,7 +23,7 @@ class SubscriptionViewSet(ModelViewSet):
     ]
     ordering_fields = ['created_at', 'product__title']
     ordering = ['-created_at']
-    
+
     def get_queryset(self):
         user = self.request.user
         queryset = super().get_queryset().filter(user=user)
@@ -31,6 +31,3 @@ class SubscriptionViewSet(ModelViewSet):
         if tab is not None:
             queryset = queryset.filter(is_active=(tab.lower() == "true"))
         return queryset
-        
-    
-    

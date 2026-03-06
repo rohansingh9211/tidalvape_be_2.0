@@ -7,14 +7,14 @@ from order.models import OrderItems
 
 logger = logging.getLogger(__name__)
 
+
 class OrderEmailService:
 
     def send_order_email(self, order):
 
         user = order.user
         order_items = OrderItems.objects.filter(
-            order=order,
-            is_delete=False
+            order=order, is_delete=False
         ).select_related("product", "product_varient")
 
         delivery_date = (order.created_at + timedelta(days=2)).strftime("%b %d %Y")
@@ -27,14 +27,16 @@ class OrderEmailService:
             if item.product_varient and hasattr(item.product_varient, "image"):
                 image = item.product_varient.image
 
-            all_order.append({
-                "product_image": image,
-                "product_name": item.product.title,
-                "quantity": item.quantity,
-                "total_price": item.total_price,
-                "price": item.price,
-                "variant_label": getattr(item.product_varient, "name", ""),
-            })
+            all_order.append(
+                {
+                    "product_image": image,
+                    "product_name": item.product.title,
+                    "quantity": item.quantity,
+                    "total_price": item.total_price,
+                    "price": item.price,
+                    "variant_label": getattr(item.product_varient, "name", ""),
+                }
+            )
 
         context = {
             "first_name": user.first_name,
@@ -51,10 +53,12 @@ class OrderEmailService:
         if order.is_subscribed:
             next_billing = order.created_at + timedelta(days=30)
 
-            context.update({
-                "next_billing": next_billing.strftime("%d-%m-%Y"),
-                "start_date": order.created_at.strftime("%d-%m-%Y"),
-            })
+            context.update(
+                {
+                    "next_billing": next_billing.strftime("%d-%m-%Y"),
+                    "start_date": order.created_at.strftime("%d-%m-%Y"),
+                }
+            )
 
             template_path = "subscription_email.html"
         else:

@@ -6,8 +6,8 @@ from payment.models import Transaction
 from product.models import Product, ProductVariant
 from django.core.exceptions import ValidationError
 
-
 # Create your models here.
+
 
 class Subscription(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -108,11 +108,6 @@ class LoyaltyTransaction(models.Model):
     points = models.IntegerField()
     transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPE)
 
-    order = models.ForeignKey(
-        Order,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

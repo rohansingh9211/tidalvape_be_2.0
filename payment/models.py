@@ -4,6 +4,7 @@ from account.models import User
 from common.generic_model import BaseModel
 import uuid
 
+
 # Create your models here.
 class Transaction(BaseModel):
     STATUS_CHOICES = [

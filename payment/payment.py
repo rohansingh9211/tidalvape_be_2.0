@@ -21,6 +21,7 @@ from tidalvape_be import settings
 DELIVERY_THRESHOLD = Decimal(settings.DELIVERY_THRESHOLD)
 DELIVERY_CHARGE = Decimal(settings.DELIVERY_CHARGE)
 
+
 def get_user_address_detail(data):
     user = User.objects.get(email=data['email'])
     address = Address.objects.get(id=data['address'])
@@ -34,8 +35,9 @@ def get_user_address_detail(data):
         "zip_code": address.zip_code,
         "city": address.city,
         "postal_code": address.zip_code,
-        "admin_area": address.landmark
+        "admin_area": address.landmark,
     }
+
 
 def create_transaction(request_data):
 
@@ -44,18 +46,15 @@ def create_transaction(request_data):
             user_detail = get_user_address_detail(request_data)
             user, _ = User.objects.get_or_create(
                 email=user_detail['email'],
-                defaults={
-                    "password": make_password(user_detail['email'])
-                }
+                defaults={"password": make_password(user_detail['email'])},
             )
             transaction_obj = Transaction.objects.select_for_update().get(
                 cyber_transactionid=request_data['authenticationTransactionId']
             )
 
-            order_data = find_total_calculation(request_data)            
+            order_data = find_total_calculation(request_data)
             address_text = build_address_text(
-                request_data['delivery_type'],
-                user_detail
+                request_data['delivery_type'], user_detail
             )
 
             order = Order.objects.create(
@@ -69,11 +68,11 @@ def create_transaction(request_data):
                 status='SUCCESS',
                 address=address_text,
                 payload=str(request_data),
-                is_subscribed=request_data.get('is_subscription', False)
+                is_subscribed=request_data.get('is_subscription', False),
             )
 
             create_order_items(order, order_data)
-            
+
             if request_data.get('is_subscription'):
                 handle_subscription(order, request_data, order_data, user, address_text)
             else:
@@ -82,18 +81,22 @@ def create_transaction(request_data):
         # Outside atomic block
         # send_order_email.delay(order.id)
         # ShopifyOrderBoard().create_order(order.id)
-        UserLoyalty.objects.filter(user=user).update(
-            points=F('points') + 1
+        UserLoyalty.objects.filter(user=user).update(points=F('points') + 1)
+        return StandardAPIResponse(
+            UserOrderSerializer(order).data, status=status.HTTP_201_CREATED
         )
-        return StandardAPIResponse(UserOrderSerializer(order).data, status=status.HTTP_201_CREATED)
     except Exception as e:
-        return StandardAPIResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return StandardAPIResponse(
+            {"message": str(e)}, status=status.HTTP_400_BAD_REQUEST
+        )
+
 
 def build_address_text(delivery_type, user_detail):
     if delivery_type == "standard":
         return f"{user_detail['address']} {user_detail['zip_code']} United Kingdom"
 
     return "Tidal Vape Chandler's Ford, 8-9 Fryern Arcade, Winchester Road, Chandler's Ford, Eastleigh, SO53 2DP"
+
 
 def create_order_items(order, order_data):
     items = []
@@ -118,8 +121,8 @@ def handle_subscription(order, request_data, order_data, user, address_text):
         Subscription.objects.create(
             user=user,
             order=order,
-            product = order_itm.get('product'),
-            product_varient = order_itm.get('variant'),
+            product=order_itm.get('product'),
+            product_varient=order_itm.get('variant'),
             days=request_data.get('subscription_days'),
             delivery_charge=order_data['delivery_charge'],
             price=order_itm['price'],
@@ -127,7 +130,7 @@ def handle_subscription(order, request_data, order_data, user, address_text):
             discount_amount=order_data['discount_amount'],
             total_price=order_data['grand_total'],
             address=address_text,
-            sub_total=order_data['sub_total']
+            sub_total=order_data['sub_total'],
         )
 
 
@@ -143,7 +146,7 @@ def find_total_calculation(request_data: dict):
                 "discount_amount": "0.00",
                 "delivery_charge": "0.00",
                 "grand_total": "0.00",
-                "order_item": []
+                "order_item": [],
             }
 
         product_ids = [item["product"] for item in cart_items]
@@ -153,11 +156,11 @@ def find_total_calculation(request_data: dict):
             if item.get("variant") and item["variant"].get("id")
         ]
         deal_ids = [item.get("deal_id") for item in cart_items if item.get("deal_id")]
-        
+
         products = {p.id: p for p in Product.objects.filter(id__in=product_ids)}
         variants = {v.id: v for v in ProductVariant.objects.filter(id__in=variant_ids)}
         deals = {d.id: d for d in ProductDeal.objects.filter(id__in=deal_ids)}
-        
+
         order_cart = []
         sub_total = Decimal("0.00")
 
@@ -182,14 +185,16 @@ def find_total_calculation(request_data: dict):
 
             sub_total += item_total
 
-            order_cart.append({
-                "product": product,
-                "variant": variant,
-                "quantity": quantity,
-                "price": truncate(price),
-                "sub_total": truncate(item_total),
-                "deal": deal
-            })
+            order_cart.append(
+                {
+                    "product": product,
+                    "variant": variant,
+                    "quantity": quantity,
+                    "price": truncate(price),
+                    "sub_total": truncate(item_total),
+                    "deal": deal,
+                }
+            )
 
         sub_total = truncate(sub_total)
 
@@ -198,37 +203,30 @@ def find_total_calculation(request_data: dict):
 
         if subscription:
             subscription_discount = Discount.objects.filter(
-                discount_category="SUBSCRIPTION",
-                is_active=True
+                discount_category="SUBSCRIPTION", is_active=True
             ).first()
 
         if loyalty_discount_id:
             loyalty_discount = Discount.objects.filter(
-                id=loyalty_discount_id,
-                discount_category="LOYALTY",
-                is_active=True
+                id=loyalty_discount_id, discount_category="LOYALTY", is_active=True
             ).first()
 
         subscription_discount_amt = Decimal("0.00")
         loyalty_discount_amt = Decimal("0.00")
-        
+
         if subscription_discount:
             subscription_discount_amt = calculate_discount(
                 sub_total, subscription_discount
             )
 
         if loyalty_discount:
-            loyalty_discount_amt = calculate_discount(
-                sub_total, loyalty_discount
-            )
-        
+            loyalty_discount_amt = calculate_discount(sub_total, loyalty_discount)
+
         total_discount = subscription_discount_amt + loyalty_discount_amt
         total_discount = truncate(total_discount)
-        
+
         delivery_charge = (
-            DELIVERY_CHARGE
-            if sub_total < DELIVERY_THRESHOLD
-            else Decimal("0.00")
+            DELIVERY_CHARGE if sub_total < DELIVERY_THRESHOLD else Decimal("0.00")
         )
 
         grand_total = sub_total - total_discount + delivery_charge
@@ -242,7 +240,7 @@ def find_total_calculation(request_data: dict):
             "discount_amount": format_amount(total_discount),
             "delivery_charge": format_amount(delivery_charge),
             "grand_total": format_amount(grand_total),
-            "order_item": order_cart 
+            "order_item": order_cart,
         }
 
     except Exception as e:
@@ -252,9 +250,10 @@ def find_total_calculation(request_data: dict):
             "discount_amount": "0.00",
             "delivery_charge": "0.00",
             "grand_total": "0.00",
-            "order_item": []
+            "order_item": [],
         }
-        
+
+
 def handle_promo_code(request_data, user):
     promo_id = request_data.get("promo_code")
     if promo_id:
@@ -262,11 +261,14 @@ def handle_promo_code(request_data, user):
         if reedem_code:
             UserReedem.objects.create(user=user, reedem_code=reedem_code)
 
+
 def truncate(value):
     return value.quantize(Decimal("0.01"), rounding=ROUND_DOWN)
 
+
 def format_amount(value):
     return f"{truncate(value):.2f}"
+
 
 def calculate_discount(sub_total, discount_obj):
     if discount_obj.discount_type == "PERCENTAGE":

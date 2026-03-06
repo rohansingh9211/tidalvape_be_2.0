@@ -4,11 +4,13 @@ from account.utils import generate_otp
 from common.generic_model import BaseModel
 from tidalvape_be import settings
 
+
 class AddressType(models.TextChoices):
     HOME = "HOME", "Home"
     OFFICE = "OFFICE", "Office"
     OTHER = "OTHER", "Other"
-        
+
+
 class Role(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
@@ -47,18 +49,18 @@ class Address(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="addresses",
-        db_index=True
+        db_index=True,
     )
     flat_name = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=255, blank=True)
     zip_code = models.CharField(max_length=20, blank=True)
     landmark = models.CharField(max_length=255, blank=True)
     address_type = models.CharField(
-        max_length=20,
-        choices=AddressType.choices,
-        default=AddressType.HOME
+        max_length=20, choices=AddressType.choices, default=AddressType.HOME
     )
-    country = models.CharField(max_length=255, blank=True, null=True, default='United Kingdom')
+    country = models.CharField(
+        max_length=255, blank=True, null=True, default='United Kingdom'
+    )
     is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -74,10 +76,9 @@ class Address(models.Model):
         Ensure only one default address per user.
         """
         if self.is_default:
-            Address.objects.filter(
-                user=self.user,
-                is_default=True
-            ).exclude(pk=self.pk).update(is_default=False)
+            Address.objects.filter(user=self.user, is_default=True).exclude(
+                pk=self.pk
+            ).update(is_default=False)
 
         super().save(*args, **kwargs)
 
@@ -86,7 +87,11 @@ class Address(models.Model):
 
 
 class UserLoyalty(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_loyalty",)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="user_loyalty",
+    )
     points = models.IntegerField(default=0)
 
     def __str__(self):

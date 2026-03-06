@@ -11,10 +11,6 @@ class CartItemSerializer(serializers.Serializer):
 class CartOverviewSerializer(serializers.Serializer):
     cart = CartItemSerializer(many=True)
     subscription = serializers.BooleanField(
-        required=False,
-        default=False
-    ) # Only one subscription discount in Discount table
-    loyalty_discount = serializers.IntegerField(
-        required=False,
-        allow_null=True
-    )
+        required=False, default=False
+    )  # Only one subscription discount in Discount table
+    loyalty_discount = serializers.IntegerField(required=False, allow_null=True)

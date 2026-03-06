@@ -3,7 +3,12 @@ from rest_framework.routers import DefaultRouter
 from django.conf import settings
 from django.conf.urls.static import static
 
-from account.views import AuthViewSet, UserAddressViewSet, UserProfileViewSet, UserViewSet
+from account.views import (
+    AuthViewSet,
+    UserAddressViewSet,
+    UserProfileViewSet,
+    UserViewSet,
+)
 
 router = DefaultRouter()
 router.register(r"auth", AuthViewSet, basename="auth")

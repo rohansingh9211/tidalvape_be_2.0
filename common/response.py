@@ -3,6 +3,7 @@ from rest_framework.status import is_success
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 
+
 class StandardAPIResponse(Response):
     """
     Standard API Response Class as per HelixBeat Standard API Guidelines

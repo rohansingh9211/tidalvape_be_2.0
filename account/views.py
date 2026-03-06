@@ -62,13 +62,15 @@ class AuthViewSet(viewsets.ViewSet):
                     "refresh_token": str(refresh),
                     "access_token": str(refresh.access_token),
                     "id": user.id,
-                    "loyalty_point": loyalty_obj.points
+                    "loyalty_point": loyalty_obj.points,
                 },
                 status=status.HTTP_200_OK,
             )
         except:
             raise StandardAPIException(
-                code='error', detail=user["error"], status_code=status.HTTP_400_BAD_REQUEST
+                code='error',
+                detail=user["error"],
+                status_code=status.HTTP_400_BAD_REQUEST,
             )
 
 
@@ -155,19 +157,20 @@ class UserViewSet(viewsets.ViewSet):
                     status=status.HTTP_404_NOT_FOUND,
                 )
 
+
 class UserAddressViewSet(ModelViewSet):
-    queryset=Address.objects.all()
+    queryset = Address.objects.all()
     serializer_class = UserAddressSerializer
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def get_queryset(self):
         user = self.request.user
         return Address.objects.filter(user=user)
-    
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-    
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
-        return StandardAPIResponse(serializer.data,  status=status.HTTP_200_OK)
+        return StandardAPIResponse(serializer.data, status=status.HTTP_200_OK)

@@ -56,6 +56,7 @@ class LoginSerializer(serializers.Serializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     loyalty_point = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = [
@@ -68,10 +69,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "date_of_birth",
             "gender",
             "phone_number",
-            "loyalty_point"
+            "loyalty_point",
         ]
+
     def get_loyalty_point(self, obj):
         return UserLoyalty.objects.get(user=obj).points
+
 
 class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True)
@@ -90,6 +93,7 @@ class ResetPasswordSerializer(serializers.Serializer):
             )
 
         return data
+
 
 class UserAddressSerializer(serializers.ModelSerializer):
     class Meta:

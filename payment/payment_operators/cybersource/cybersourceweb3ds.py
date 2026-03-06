@@ -10,15 +10,17 @@ import json
 from importlib.machinery import SourceFileLoader
 from django.http import JsonResponse
 from y6u.utils import webUserAddressDetail
-from y6u.models import (Transaction, User)
+from y6u.models import Transaction, User
 import uuid
 
 config_file = os.path.join(os.getcwd(), "Configuration.py")
 configuration = SourceFileLoader("module.name", config_file).load_module()
 
+
 def write_log_audit(status):
     print(f"[Sample Code Testing] [{Path(__file__).stem}] {status}")
-    
+
+
 # To delete None values in Input Request Json body
 def del_none(d):
     for key, value in list(d.items()):
@@ -27,6 +29,7 @@ def del_none(d):
         elif isinstance(value, dict):
             del_none(value)
     return d
+
 
 def response_to_dict(obj):
     """
@@ -39,8 +42,8 @@ def response_to_dict(obj):
         return {key: response_to_dict(value) for key, value in obj.__dict__.items()}
     else:
         return obj
-        
-    
+
+
 # class EnrollWithPendingAuthentication(APIView):
 #     def post(self, request, *args, **kwargs):
 #         try:
@@ -96,11 +99,11 @@ def response_to_dict(obj):
 #             deviceInformationObj = Riskv1authenticationsDeviceInformation(
 #                 ip_address=data.get('ipAddress'),
 #                 http_accept_content="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-#                 http_browser_language="en-US", 
+#                 http_browser_language="en-US",
 #                 http_browser_java_enabled=False,
 #                 http_browser_color_depth="24",
-#                 http_browser_screen_height="1080",  
-#                 http_browser_screen_width="1920",  
+#                 http_browser_screen_height="1080",
+#                 http_browser_screen_width="1920",
 #                 http_browser_time_difference="-300",
 #                 user_agent_browser_value= "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0"
 #             )
@@ -130,7 +133,7 @@ def response_to_dict(obj):
 #             api_instance = PayerAuthenticationApi(client_config)
 #             return_data, api_status, api_body = api_instance.check_payer_auth_enrollment(requestObj)
 
-        
+
 #             print(type(return_data), '-------------return_data')
 #             print(api_status, '-------------api_status')
 #             print(api_body, '-------------api_body')
@@ -172,7 +175,7 @@ def response_to_dict(obj):
 #             return Response({
 #                 "error": str(e)
 #             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
 
 # start Website Payment Authentication
 # class EnrollWebWithPendingAuthentication(APIView):
@@ -187,8 +190,8 @@ def response_to_dict(obj):
 #                 user, created = User.objects.get_or_create(
 #                     email=userdetail['email'],
 #                     defaults={
-#                         'username': userdetail['email'],  
-#                         'password':  userdetail['email'] 
+#                         'username': userdetail['email'],
+#                         'password':  userdetail['email']
 #                     }
 #                 )
 #                 if created:
@@ -245,11 +248,11 @@ def response_to_dict(obj):
 #             deviceInformationObj = Riskv1authenticationsDeviceInformation(
 #                 ip_address=data.get('ipAddress'),
 #                 http_accept_content="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-#                 http_browser_language="en-US", 
+#                 http_browser_language="en-US",
 #                 http_browser_java_enabled=False,
 #                 http_browser_color_depth="24",
-#                 http_browser_screen_height="1080",  
-#                 http_browser_screen_width="1920",  
+#                 http_browser_screen_height="1080",
+#                 http_browser_screen_width="1920",
 #                 http_browser_time_difference="-300",
 #                 user_agent_browser_value= "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0"
 #             )
@@ -279,7 +282,7 @@ def response_to_dict(obj):
 #             api_instance = PayerAuthenticationApi(client_config)
 #             return_data, api_status, api_body = api_instance.check_payer_auth_enrollment(requestObj)
 
-        
+
 #             print(type(return_data), '-------------return_data')
 #             print(api_status, '-------------api_status')
 #             print(api_body, '-------------api_body')
@@ -395,7 +398,7 @@ def response_to_dict(obj):
 #                                 </html>
 #                             """
 #             return Response(html_content, content_type='text/html')
-        
+
 #         except Exception as e:
 #             return JsonResponse({"error": str(e)}, status=500)
 
@@ -417,19 +420,16 @@ def response_to_dict(obj):
 
 #             """
 #         return Response(html_content, content_type='text/html')
-        
 
-        
-        
-        
+
 # class CspEnrollWebPendingAuthOperator:
 #     def __init__(self, request):
 #         self.request = request
-    
+
 #     @staticmethod
 #     def write_log_audit(status):
 #         print(f"[Sample Code Testing] [{Path(__file__).stem}] {status}")
-    
+
 #     @staticmethod
 #     def del_none(d):
 #         for key, value in list(d.items()):
@@ -438,7 +438,7 @@ def response_to_dict(obj):
 #             elif isinstance(value, dict):
 #                 del_none(value)
 #         return d
-    
+
 #     def enroll_web_pending_auth(self):
 #         try:
 #             # Data from request body
@@ -450,8 +450,8 @@ def response_to_dict(obj):
 #                 user, created = User.objects.get_or_create(
 #                     email=userdetail['email'],
 #                     defaults={
-#                         'username': userdetail['email'],  
-#                         'password':  userdetail['email'] 
+#                         'username': userdetail['email'],
+#                         'password':  userdetail['email']
 #                     }
 #                 )
 #                 if created:
@@ -467,7 +467,7 @@ def response_to_dict(obj):
 #             #     code=clientReferenceInformationCode
 #             # )
 #             print("hello how are you")
-            
+
 
 #             orderInformationAmountDetailsObj = Riskv1authenticationsOrderInformationAmountDetails(
 #                 currency="GBP",
@@ -511,11 +511,11 @@ def response_to_dict(obj):
 #             deviceInformationObj = Riskv1authenticationsDeviceInformation(
 #                 ip_address=data.get('ipAddress'),
 #                 http_accept_content="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-#                 http_browser_language="en-US", 
+#                 http_browser_language="en-US",
 #                 http_browser_java_enabled=False,
 #                 http_browser_color_depth="24",
-#                 http_browser_screen_height="1080",  
-#                 http_browser_screen_width="1920",  
+#                 http_browser_screen_height="1080",
+#                 http_browser_screen_width="1920",
 #                 http_browser_time_difference="-300",
 #                 user_agent_browser_value= "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0"
 #             )
@@ -545,7 +545,7 @@ def response_to_dict(obj):
 #             api_instance = PayerAuthenticationApi(client_config)
 #             return_data, api_status, api_body = api_instance.check_payer_auth_enrollment(requestObj)
 
-        
+
 #             print(type(return_data), '-------------return_data')
 #             print(api_status, '-------------api_status')
 #             print(api_body, '-------------api_body')
@@ -556,7 +556,7 @@ def response_to_dict(obj):
 #             print(json_body, '-json_body-')
 #             # Log and return the API response
 #             write_log_audit(api_status)
-            
+
 #             if 'status' in json_body:
 #                 if json_body['status'] == "PENDING_AUTHENTICATION":
 #                     transaction = Transaction.objects.create(
@@ -588,7 +588,7 @@ def response_to_dict(obj):
 #             write_log_audit(e.status if hasattr(e, 'status') else 999)
 #             return StandardAPIException(
 #                 code='error',
-#                 detail=str(e), 
+#                 detail=str(e),
 #                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
 #             )
 
@@ -617,6 +617,7 @@ from cybersource_rest_client import (
 logger = logging.getLogger(__name__)
 config_file = os.path.join(os.getcwd(), "Configuration.py")
 configuration = SourceFileLoader("module.name", config_file).load_module()
+
 
 class CspEnrollWebPendingAuthOperator:
     def __init__(self, request):
@@ -649,7 +650,7 @@ class CspEnrollWebPendingAuthOperator:
                 raise StandardAPIException(
                     code="validation_error",
                     detail=f"{field} is required",
-                    status_code=status.HTTP_400_BAD_REQUEST
+                    status_code=status.HTTP_400_BAD_REQUEST,
                 )
 
         userdetail = webUserAddressDetail(data)
@@ -659,8 +660,7 @@ class CspEnrollWebPendingAuthOperator:
         # Create / Get User Safely
         # =========================
         user, created = User.objects.get_or_create(
-            email=userdetail['email'],
-            defaults={'username': userdetail['email']}
+            email=userdetail['email'], defaults={'username': userdetail['email']}
         )
 
         if created:
@@ -671,8 +671,7 @@ class CspEnrollWebPendingAuthOperator:
         # Order Information
         # =========================
         amount_details = Riskv1authenticationsOrderInformationAmountDetails(
-            currency="GBP",
-            total_amount=data['total']
+            currency="GBP", total_amount=data['total']
         )
 
         bill_to = Riskv1authenticationsOrderInformationBillTo(
@@ -685,12 +684,11 @@ class CspEnrollWebPendingAuthOperator:
             last_name=userdetail.get('last_name'),
             phone_number=userdetail.get('phone_number'),
             email=userdetail.get('email'),
-            postal_code=userdetail.get('postal_code')
+            postal_code=userdetail.get('postal_code'),
         )
 
         order_information = Riskv1authenticationsOrderInformation(
-            amount_details=amount_details.__dict__,
-            bill_to=bill_to.__dict__
+            amount_details=amount_details.__dict__, bill_to=bill_to.__dict__
         )
 
         # =========================
@@ -700,7 +698,7 @@ class CspEnrollWebPendingAuthOperator:
             type="001",
             expiration_month=data.get('month'),
             expiration_year=data.get('year'),
-            number=data.get('card_number')
+            number=data.get('card_number'),
         )
 
         payment_information = Riskv1authenticationsPaymentInformation(
@@ -726,7 +724,7 @@ class CspEnrollWebPendingAuthOperator:
             http_browser_screen_height="1080",
             http_browser_screen_width="1920",
             http_browser_time_difference="0",
-            user_agent_browser_value=self.request.META.get("HTTP_USER_AGENT")
+            user_agent_browser_value=self.request.META.get("HTTP_USER_AGENT"),
         )
 
         # =========================
@@ -735,7 +733,7 @@ class CspEnrollWebPendingAuthOperator:
         consumer_auth = Riskv1decisionsConsumerAuthenticationInformation(
             device_channel="BROWSER",
             return_url=f"https://app.tidalvape.co.uk/api/validate-web-auth/?user={user.id}",
-            transaction_mode="eCommerce"
+            transaction_mode="eCommerce",
         )
 
         request_object = CheckPayerAuthEnrollmentRequest(
@@ -743,7 +741,7 @@ class CspEnrollWebPendingAuthOperator:
             payment_information=payment_information.__dict__,
             buyer_information=buyer_information.__dict__,
             device_information=device_information.__dict__,
-            consumer_authentication_information=consumer_auth.__dict__
+            consumer_authentication_information=consumer_auth.__dict__,
         )
 
         request_dict = self.del_none(request_object.__dict__)
@@ -756,7 +754,9 @@ class CspEnrollWebPendingAuthOperator:
         client_config = config_obj.get_configuration()
         api_instance = PayerAuthenticationApi(client_config)
 
-        return_data, api_status, api_body = api_instance.check_payer_auth_enrollment(request_json)
+        return_data, api_status, api_body = api_instance.check_payer_auth_enrollment(
+            request_json
+        )
 
         self.write_log_audit(api_status)
 
@@ -778,18 +778,23 @@ class CspEnrollWebPendingAuthOperator:
                     price=float(data['total']),
                     discount_percentage=data.get('discount_percentage', 0),
                     cyber_status=status_value,
-                    cyber_transactionid=consumer_info.get("authenticationTransactionId"),
-                    transaction_id=reference_id
+                    cyber_transactionid=consumer_info.get(
+                        "authenticationTransactionId"
+                    ),
+                    transaction_id=reference_id,
                 )
 
-            return StandardAPIResponse({
-                "status": api_status,
-                "user": user.id,
-                "access_token": consumer_info.get("accessToken"),
-                "transaction_id": consumer_info.get("authenticationTransactionId"),
-                "callback_url": consumer_info.get("stepUpUrl"),
-                "cyber_status": status_value
-            }, status=status.HTTP_200_OK)
+            return StandardAPIResponse(
+                {
+                    "status": api_status,
+                    "user": user.id,
+                    "access_token": consumer_info.get("accessToken"),
+                    "transaction_id": consumer_info.get("authenticationTransactionId"),
+                    "callback_url": consumer_info.get("stepUpUrl"),
+                    "cyber_status": status_value,
+                },
+                status=status.HTTP_200_OK,
+            )
 
         # =========================
         # Handle Failed Response
@@ -798,5 +803,5 @@ class CspEnrollWebPendingAuthOperator:
         raise StandardAPIException(
             code="cybersource_error",
             detail=error_info.get("message", "Authentication failed"),
-            status_code=status.HTTP_400_BAD_REQUEST
+            status_code=status.HTTP_400_BAD_REQUEST,
         )

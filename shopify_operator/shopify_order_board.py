@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.db import transaction
 from order.models import Order
+
 logger = logging.getLogger(__name__)
 
 
@@ -12,15 +13,16 @@ class ShopifyOrderBoard:
         self.base_url = f"https://{settings.SHOPIFY_STORE_DOMAIN}/admin/api/{settings.SHOPIFY_API_VERSION}"
         self.headers = {
             "Content-Type": "application/json",
-            "X-Shopify-Access-Token": settings.SHOPIFY_ADMIN_TOKEN
+            "X-Shopify-Access-Token": settings.SHOPIFY_ADMIN_TOKEN,
         }
 
     def create_order(self, order_id: int):
 
-        order = Order.objects.select_related("user").prefetch_related(
-            "order_item__product",
-            "order_item__product_varient"
-        ).get(id=order_id)
+        order = (
+            Order.objects.select_related("user")
+            .prefetch_related("order_item__product", "order_item__product_varient")
+            .get(id=order_id)
+        )
 
         # Prevent duplicate push
         if order.shopify_order_id:
@@ -33,10 +35,7 @@ class ShopifyOrderBoard:
 
         try:
             response = requests.post(
-                url,
-                headers=self.headers,
-                json=payload,
-                timeout=20
+                url, headers=self.headers, json=payload, timeout=20
             )
             response.raise_for_status()
 
@@ -64,56 +63,45 @@ class ShopifyOrderBoard:
                     f"Missing Shopify variant ID for product {item.product.title}"
                 )
 
-            line_items.append({
-                "variant_id": item.product_varient.id,
-                "quantity": item.quantity,
-            })
+            line_items.append(
+                {
+                    "variant_id": item.product_varient.id,
+                    "quantity": item.quantity,
+                }
+            )
 
         final_amount = order.total_price + order.delivery_charge
 
         return {
             "order": {
                 "line_items": line_items,
-
                 "customer": {
                     "email": order.user.email,
                     "first_name": order.user.first_name or "Guest",
                     "last_name": order.user.last_name or "User",
                 },
-
                 "billing_address": {
                     "address1": order.address,
                     "country": "United Kingdom",
                     "first_name": order.user.first_name or "Guest",
                     "last_name": order.user.last_name or "User",
                 },
-
                 "shipping_address": {
                     "address1": order.address,
                     "country": "United Kingdom",
                     "first_name": order.user.first_name or "Guest",
                     "last_name": order.user.last_name or "User",
                 },
-
                 "transactions": [
-                    {
-                        "kind": "sale",
-                        "status": "success",
-                        "amount": str(final_amount)
-                    }
+                    {"kind": "sale", "status": "success", "amount": str(final_amount)}
                 ],
-
                 "shipping_lines": [
-                    {
-                        "title": "Delivery Charge",
-                        "price": str(order.delivery_charge)
-                    }
+                    {"title": "Delivery Charge", "price": str(order.delivery_charge)}
                 ],
-
                 "currency": "GBP",
                 "financial_status": "paid",
                 "note": f"Internal Order ID: {order.order_id}",
                 "send_receipt": False,
-                "send_fulfillment_receipt": False
+                "send_fulfillment_receipt": False,
             }
         }

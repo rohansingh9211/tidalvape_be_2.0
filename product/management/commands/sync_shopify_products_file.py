@@ -6,7 +6,16 @@ from django.core.files.base import ContentFile
 from django.utils.text import slugify
 from django.utils import timezone
 
-from product.models import Product, ProductImage, ProductOption, ProductTag, ProductType, ProductVariant, Vendor
+from product.models import (
+    Product,
+    ProductImage,
+    ProductOption,
+    ProductTag,
+    ProductType,
+    ProductVariant,
+    Vendor,
+)
+
 
 class Command(BaseCommand):
     help = "Import products from Shopify Excel file"
@@ -122,8 +131,6 @@ class Command(BaseCommand):
                             ).image.save(file_name, image_file, save=True)
 
                     except Exception as e:
-                        self.stdout.write(
-                            self.style.ERROR(f"Image error: {e}")
-                        )
+                        self.stdout.write(self.style.ERROR(f"Image error: {e}"))
 
         self.stdout.write(self.style.SUCCESS("Import completed successfully!"))

@@ -112,28 +112,21 @@ class ProductImage(ShopifyBaseModel):
     def __str__(self):
         return f"{self.product.title} Image"
 
+
 class ProductDeal(BaseModel):
     DEAL_TYPE_CHOICES = (
-        ("fixed", "Fixed Price"),        # Buy X for £Y
-        ("percentage", "Percentage"),    # 10% off
+        ("fixed", "Fixed Price"),  # Buy X for £Y
+        ("percentage", "Percentage"),  # 10% off
     )
     product = models.ForeignKey(
-        "Product",
-        on_delete=models.CASCADE,
-        related_name="deals",
-        db_index=True
+        "Product", on_delete=models.CASCADE, related_name="deals", db_index=True
     )
     deal_name = models.CharField(max_length=150)
     deal_quantity = models.PositiveIntegerField(default=1)
     deal_type = models.CharField(
-        max_length=20,
-        choices=DEAL_TYPE_CHOICES,
-        default="fixed"
+        max_length=20, choices=DEAL_TYPE_CHOICES, default="fixed"
     )
-    deal_value = models.DecimalField(
-        max_digits=10,
-        decimal_places=2
-    )
+    deal_value = models.DecimalField(max_digits=10, decimal_places=2)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
@@ -144,4 +137,3 @@ class ProductDeal(BaseModel):
 
     def __str__(self):
         return f"{self.product.title} - {self.deal_name}"
-    
