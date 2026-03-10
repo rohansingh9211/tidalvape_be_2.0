@@ -7,6 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
+from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 
@@ -43,7 +44,7 @@ class GetProdcutCardListViewSet(ModelViewSet):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(similar_products, many=True)
-        return StandardAPIResponse(serializer.data)
+        return StandardAPIResponse(serializer.data, status=status.HTTP_200_OK)
 
 
 class GetProductDetailViewSet(ModelViewSet):
@@ -55,3 +56,16 @@ class GetProductDetailViewSet(ModelViewSet):
     http_method_names = ['get']
     lookup_field = "handle"
     pagination_class = StandardPageNumberPagination
+    
+    def retrieve(self, request, *args, **kwargs):
+        handle = kwargs.get("handle")
+        product = self.get_queryset().filter(handle=handle).first()
+        if not product:
+            return StandardAPIResponse(
+                {"message": "Product not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = self.get_serializer(product)
+        return StandardAPIResponse(serializer.data, status=status.HTTP_200_OK)
+        
