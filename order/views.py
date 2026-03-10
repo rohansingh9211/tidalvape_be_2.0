@@ -6,6 +6,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import permissions
 from django.core.paginator import Paginator, EmptyPage
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 # Create your views here.
@@ -16,6 +18,8 @@ class SubscriptionViewSet(ModelViewSet):
     filterset_class = SubscriptionFilter
     http_method_names = ['get']
     pagination_class = StandardPageNumberPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    
     search_fields = [
         'product__title',
         'product__vendor__name',

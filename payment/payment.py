@@ -82,9 +82,22 @@ def create_transaction(request_data):
         # Outside atomic block
         # send_order_email.delay(order.id)
         # ShopifyOrderBoard().create_order(order.id)
+        
+        loyalty_discount_id = request_data.get("loyalty_discount")
+        if loyalty_discount_id:
+            loyalty_discount = Discount.objects.filter(
+                id=loyalty_discount_id,
+                discount_category="LOYALTY",
+                is_active=True
+            ).first()
+            UserLoyalty.objects.filter(user=user).update(
+                points=F('points') - loyalty_discount.points_required
+            )
+        
         UserLoyalty.objects.filter(user=user).update(
             points=F('points') + 1
         )
+        
         return StandardAPIResponse(UserOrderSerializer(order).data, status=status.HTTP_201_CREATED)
     except Exception as e:
         return StandardAPIResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
